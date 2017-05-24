@@ -21,9 +21,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,14 +30,13 @@ import java.io.FileNotFoundException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>/*, ImageAdapter.ImageOnClickHandler*/{
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, ImageAdapter.ImageOnClickHandler{
 
-    //@BindView(R.id.lv_photos)
-    //RecyclerView mPhotosRecyclerView;
+    @BindView(R.id.rv_photos)
+    RecyclerView mPhotosRecyclerView;
     int PHOTOS_EXTERNAL_LOADER_ID = 100;
     int PHOTOS_INTERNAL_LOADER_ID = 101;
     ImageAdapter imageAdapter;
-    GridView mGridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +46,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
-        //mPhotosRecyclerView.setLayoutManager(gridLayoutManager);
-        mGridView = (GridView) findViewById(R.id.gv_photos);
+        imageAdapter = new ImageAdapter(getApplicationContext(), this);
+        mPhotosRecyclerView.setAdapter(imageAdapter);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        mPhotosRecyclerView.setLayoutManager(gridLayoutManager);
+
         loadImageFromStorage();
     }
 
@@ -92,11 +91,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //if(args.getChar("parm")=='e')
         {
             String[] projection = {MediaStore.Images.Thumbnails._ID};
+            String orderBy = MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC";
             return new CursorLoader(this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     projection,
                     null,
                     null,
-                    null);
+                    orderBy);
         }/*
         else
         {
@@ -114,8 +114,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         System.out.println(data);
-        imageAdapter = new ImageAdapter(getApplicationContext(), data, false);
-        mGridView.setAdapter(imageAdapter);
         imageAdapter.swapCursor(data);
     }
 
@@ -124,8 +122,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
-   /* @Override
+    @Override
     public void OnClick(Cursor rowCursor) {
 
-    }*/
+    }
 }

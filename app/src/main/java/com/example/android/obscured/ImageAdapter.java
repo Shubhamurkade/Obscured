@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -19,14 +18,13 @@ import com.bumptech.glide.Glide;
  * Created by Shubham on 21-05-2017.
  */
 
-public class ImageAdapter extends CursorAdapter {
+public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageAdapterViewHolder> {
 
     Cursor mCursor = null;
     Context mContext;
-    //ImageOnClickHandler imageOnClickHandler = null;
+    ImageOnClickHandler imageOnClickHandler = null;
     int columnIndex;
 
-    /*
     public interface ImageOnClickHandler{
         void OnClick(Cursor rowCursor);
     }
@@ -46,7 +44,7 @@ public class ImageAdapter extends CursorAdapter {
             super(view);
             imageView = (ImageView)view.findViewById(R.id.iv_image);
             imageView.setOnClickListener(this);
-            columnIndex = mCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails._ID);
+            columnIndex = mCursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
         }
 
         @Override
@@ -80,9 +78,8 @@ public class ImageAdapter extends CursorAdapter {
         Uri uri = Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, ""+imageId);
         //Glide.with(mContext).load(uri).into(holder.imageView);
         holder.imageView.setImageURI(Uri.withAppendedPath(
-                MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, "" + imageId));
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + imageId));
         holder.imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        holder.imageView.setPadding(8, 8, 8, 8);
     }
 
     @Override
@@ -92,47 +89,15 @@ public class ImageAdapter extends CursorAdapter {
         if(mCursor != null)
         {
             size = mCursor.getCount();
-            return 2;
+            return size;
         }
         else return 0;
     }
-*/
-    public ImageView imageView;
-    public ImageAdapter(Context context, Cursor c, boolean autoQuery )
-    {
-        super(context, c, autoQuery);
-        mContext = context;
-        columnIndex = c.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-        //this.imageOnClickHandler = imageOnClickHandler;
-    }
 
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-
-        int layoutIdForImage = R.layout.single_photo;
-        boolean shouldAttachToParentImmediatedly = false;
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(layoutIdForImage, parent, shouldAttachToParentImmediatedly);
-        return view;
-    }
-
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-        cursor.moveToNext();
-        int imageId = cursor.getInt(columnIndex);
-        //Uri uri = Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, ""+imageId);
-        //Glide.with(mContext).load(uri).into(holder.imageView);
-        imageView = (ImageView) view.findViewById(R.id.iv_image);
-        imageView.setImageURI(Uri.withAppendedPath(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(imageId)));
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        imageView.setPadding(8, 8, 8, 8);
-    }
-
-    /*public void swapCursor(Cursor data)
+    public void swapCursor(Cursor data)
     {
         mCursor = data;
         mCursor.moveToFirst();
         notifyDataSetChanged();
-    }*/
+    }
 }

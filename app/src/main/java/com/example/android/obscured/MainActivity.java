@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,19 +17,21 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.android.obscured.R.attr.reverseLayout;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, ImageAdapter.ImageOnClickHandler{
 
@@ -37,6 +40,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     int PHOTOS_EXTERNAL_LOADER_ID = 100;
     int PHOTOS_INTERNAL_LOADER_ID = 101;
     ImageAdapter imageAdapter;
+    Handler handler;
+    StaggeredGridLayoutManager staggeredGridLayoutManager;
+    private boolean loading = false;
+    private int page = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +55,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         imageAdapter = new ImageAdapter(getApplicationContext(), this);
         mPhotosRecyclerView.setAdapter(imageAdapter);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        mPhotosRecyclerView.setLayoutManager(gridLayoutManager);
-
+        staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        staggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        mPhotosRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         loadImageFromStorage();
+        registerForContextMenu(mPhotosRecyclerView);
     }
 
     @Override
@@ -90,10 +98,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         //if(args.getChar("parm")=='e')
         {
-            String[] projection = {MediaStore.Images.Thumbnails._ID};
-            String orderBy = MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC";
+            String[] projection = {MediaStore.Images.Media._ID};
+            String orderBy = MediaStore.Images.Media.DATE_TAKEN + " DESC";
             return new CursorLoader(this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    projection,
+                    null,
                     null,
                     null,
                     orderBy);
@@ -125,5 +133,47 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void OnClick(Cursor rowCursor) {
 
+
     }
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        String imagePath = imageAdapter.imageData[imageAdapter.mAdapterPosition];
+        File imageFile = new File(imagePath);
+        int pathLen = imagePath.length();
+        System.out.println(imagePath);
+        while(imagePath.charAt(--pathLen)!='/')
+        {
+        }
+
+        String newImagePath = imagePath.substring(0, ++pathLen)+ '.' +imagePath.substring(pathLen);
+        File requiredImageName = new File(newImagePath);
+
+        try{
+            requiredImageName.createNewFile();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        System.out.println(newImagePath);
+        if(imageFile.renameTo(requiredImageName))
+        {
+            Toast.makeText(this, newImagePath, Toast.LENGTH_LONG).show();
+        }
+
+        if(imageFile.delete())
+        {
+            Toast.makeText(this, "Deleted file", Toast.LENGTH_LONG).show();
+            System.out.println("File deleted");
+        }
+        else if(imageFile.exists())
+        {
+            Toast.makeText(this, "File exists", Toast.LENGTH_LONG).show();
+        }
+
+        getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, MediaStore.Images.Media.DATA+" = ?", new String[]{imagePath});
+        return true;
+    }
+
 }

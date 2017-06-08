@@ -1,5 +1,6 @@
 package com.example.android.obscured;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,6 +25,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.example.android.obscured.DatabaseUtilities.PicsContract;
 
 import java.io.File;
 import java.io.IOException;
@@ -138,41 +141,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 
+        Uri uriForImageInsert = PicsContract.PicsEntry.CONTENT_URI.buildUpon().appendPath("1").build();
+
         String imagePath = imageAdapter.imageData[imageAdapter.mAdapterPosition];
-        File imageFile = new File(imagePath);
-        int pathLen = imagePath.length();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PicsContract.PicsEntry.PIC_DATA, imagePath);
+
+        getContentResolver().insert(uriForImageInsert, contentValues);
         System.out.println(imagePath);
-        while(imagePath.charAt(--pathLen)!='/')
-        {
-        }
-
-        String newImagePath = imagePath.substring(0, ++pathLen)+ '.' +imagePath.substring(pathLen);
-        File requiredImageName = new File(newImagePath);
-
-        try{
-            requiredImageName.createNewFile();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        System.out.println(newImagePath);
-        if(imageFile.renameTo(requiredImageName))
-        {
-            Toast.makeText(this, newImagePath, Toast.LENGTH_LONG).show();
-        }
-
-        if(imageFile.delete())
-        {
-            Toast.makeText(this, "Deleted file", Toast.LENGTH_LONG).show();
-            System.out.println("File deleted");
-        }
-        else if(imageFile.exists())
-        {
-            Toast.makeText(this, "File exists", Toast.LENGTH_LONG).show();
-        }
-
-        getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, MediaStore.Images.Media.DATA+" = ?", new String[]{imagePath});
         return true;
     }
 

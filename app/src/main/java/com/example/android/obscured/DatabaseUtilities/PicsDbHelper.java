@@ -14,7 +14,7 @@ public class PicsDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "moviesDb.db";
 
     // If you change the database schema, you must increment the database version
-    private static final int VERSION = 6;
+    private static final int VERSION = 7;
 
 
     // Constructor
@@ -31,7 +31,8 @@ public class PicsDbHelper extends SQLiteOpenHelper {
 
         // Create tasks table (careful to follow SQL formatting rules)
         final String CREATE_TABLE = "CREATE TABLE "  + PicsContract.PicsEntry.TABLE_NAME + " (" +
-                PicsContract.PicsEntry.PIC_DATA + " TEXT NOT NULL);";
+                PicsContract.PicsEntry._ID                + " INTEGER PRIMARY KEY, " +
+                PicsContract.PicsEntry.PIC_DATA + " TEXT NOT NULL UNIQUE);";
 
         db.execSQL(CREATE_TABLE);
     }

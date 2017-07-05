@@ -1,4 +1,21 @@
 <resources>
     <string name="app_name">Obscured</string>
     <string name="action_settings">Settings</string>
+    <string name="action_hide">Hide</string>
+    <string name="all_pics">All Pics</string>
+    <string name="hidden_pics">Hidden Pics</string>
+    <string-array name="nav_list">
+        <item>All Pics</item>
+        <item>Hidden Pics</item>
+    </string-array>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="hide_item_title">Hide</string>
+    <string name="db_remove_hidden_image">Remove</string>
+    <string name="image_path_key">image_path_key</string>
+    <string name="password">password</string>
 </resources>

@@ -162,16 +162,16 @@ public class MethodsDeclarations {
 
             if(imageFile.renameTo(requiredImageName))
             {
-                Toast.makeText(context, newImagePath, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, newImagePath, Toast.LENGTH_LONG).show();
             }
 
             if(imageFile.delete())
             {
-                Toast.makeText(context, "Deleted file", Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, "Deleted file", Toast.LENGTH_LONG).show();
             }
             else if(imageFile.exists())
             {
-                Toast.makeText(context, "File exists", Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, "File exists", Toast.LENGTH_LONG).show();
             }
 
             /* create contentvalues to insert hidden image path (newImagePath);*/

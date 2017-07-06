@@ -1,6 +1,8 @@
 package com.example.android.obscured.DatabaseUtilities;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,13 +11,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.android.obscured.MethodsDeclarations;
@@ -31,6 +36,8 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Shubham on 30-06-2017.
@@ -48,7 +55,7 @@ public class ImageDetailFragment extends Fragment implements LoaderManager.Loade
     Context mActivityContext;
 
     int PHOTO_DETAILS_LOADER_ID = 104;
-    boolean isExiting = true;
+    boolean isExiting = false;
 
     public class ImageAllDetails
     {
@@ -69,9 +76,46 @@ public class ImageDetailFragment extends Fragment implements LoaderManager.Loade
         getLoaderManager().initLoader(PHOTO_DETAILS_LOADER_ID, null, this);
     }
 
+    public void showAlertBox()
+    {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        // Get the layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        final View layout = inflater.inflate(R.layout.password_alert, null);
+
+        builder.setView(layout)
+                .setCancelable(false)
+                .setPositiveButton("Next", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        SharedPreferences sharedPreferences = getContext().getSharedPreferences(getString(R.string.password), MODE_PRIVATE);
+                        String storedPass = sharedPreferences.getString(getString(R.string.password), null);
+
+                        EditText password = (EditText)layout.findViewById(R.id.et_pass);
+                        if(password.getText().toString().equals(storedPass))
+                        {
+                            dialog.dismiss();
+                        }
+                        else
+                        {
+                            Toast.makeText(getContext(), "Wrong password", Toast.LENGTH_SHORT).show();
+                            showAlertBox();
+                        }
+                    }
+                });
+
+        builder.create().show();
+
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+        if(isExiting)
+        {
+            showAlertBox();
+        }
+        isExiting = false;
         View rootView = inflater.inflate(R.layout.image_detail_fragment, container, false);
         //ButterKnife.bind(this, container);
 
@@ -170,6 +214,13 @@ public class ImageDetailFragment extends Fragment implements LoaderManager.Loade
 
         }
 
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        isExiting = true;
     }
 
 }

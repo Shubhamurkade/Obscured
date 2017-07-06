@@ -1,16 +1,24 @@
 package com.example.android.obscured;
 
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.android.obscured.DatabaseUtilities.ImageDetailFragment;
 
@@ -117,13 +125,45 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         fragmentTransaction.commit();
 
     }
-/*
+
     @Override
-    public void onArticleSelected(String movieClicked, boolean dualPane) {
-
-
-
-
+    public void onStop()
+    {
+        super.onStop();
+        //finish();
     }
-    */
+
+    @Override
+    public void onRestart()
+    {
+        super.onRestart();
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = this.getLayoutInflater();
+
+        final View layout = inflater.inflate(R.layout.password_alert, null);
+
+                builder.setView(layout)
+                        .setCancelable(false)
+                .setPositiveButton("Next", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.password), MODE_PRIVATE);
+                        String storedPass = sharedPreferences.getString(getString(R.string.password), null);
+
+                        EditText password = (EditText)layout.findViewById(R.id.et_pass);
+                        if(password.getText().toString().equals(storedPass))
+                        {
+                            dialog.dismiss();
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(), "Wrong password", Toast.LENGTH_SHORT).show();
+                            onRestart();
+                        }
+                    }
+                });
+
+        builder.create().show();
+    }
 }

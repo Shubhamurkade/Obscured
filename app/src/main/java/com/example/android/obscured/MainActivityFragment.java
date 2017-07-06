@@ -159,6 +159,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         getLoaderManager().destroyLoader(PHOTOS_HIDDEN_ADDER);
         LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = this;
         getLoaderManager().initLoader(PHOTOS_HIDDEN_ADDER,null, loaderCallbacks);
+        
     }
     @Override
     public void onCreate(Bundle savedInstanceState)

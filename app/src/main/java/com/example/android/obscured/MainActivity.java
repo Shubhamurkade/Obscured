@@ -145,9 +145,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
                 builder.setView(layout)
                         .setCancelable(false)
-                .setPositiveButton("Next", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
+                .setPositiveButton("Next", (dialog, id) -> {
                         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.password), MODE_PRIVATE);
                         String storedPass = sharedPreferences.getString(getString(R.string.password), null);
 
@@ -161,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                             Toast.makeText(getApplicationContext(), "Wrong password", Toast.LENGTH_SHORT).show();
                             onRestart();
                         }
-                    }
+
                 });
 
         builder.create().show();

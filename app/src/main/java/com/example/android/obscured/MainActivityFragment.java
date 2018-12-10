@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import java.util.Optional;
 
 import com.example.android.obscured.DatabaseUtilities.PicsContract;
 
@@ -167,13 +168,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
-    /*
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }*/
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -207,7 +202,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             Uri uri = PicsContract.PicsEntry.CONTENT_URI;
             Cursor cursor = mActivityContext.getContentResolver().query(uri, null, null, null, null);
 
-            while(cursor.moveToNext())
+            while(cursor!=null && cursor.moveToNext())
             {
                 ContentValues contentValues = new ContentValues();
 

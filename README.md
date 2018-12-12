@@ -3,8 +3,9 @@ This is an experimental app which give the user an ability to hide some of the p
 
 ## Installation
 1. Execute the following command to clone this repository:
-```sh git clone https://github.com/Shubhamurkade/Obscured.git ```
-
+```sh
+git clone https://github.com/Shubhamurkade/Obscured.git
+```
 2. Open the project in Android studio and install it on the phone.
 
 ## Usage
